@@ -141,8 +141,9 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   postInstall = ''
     ln -s herdr-core $out/bin/hc
-    # The agent skill stub, next to the full manual `hc --skill` prints.
-    install -Dm644 skills/herdr-core/SKILL.md $out/share/skills/herdr-core/SKILL.md
+    # The agent skill stub, next to the full manual `hc --skill` prints. The
+    # two-level path is what the nixpkgs installAgentSkills hook produces.
+    install -Dm644 skills/herdr-core/SKILL.md $out/share/skills/herdr-core/herdr-core/SKILL.md
     install -Dm644 LICENSE crates/herdr-core/THIRD-PARTY-NOTICES -t $out/share/doc/herdr-core
   '';
 

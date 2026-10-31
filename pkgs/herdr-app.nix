@@ -79,16 +79,22 @@ rustPlatform.buildRustPackage (finalAttrs: {
   dontUseZigInstall = true;
 
   postPatch = ''
-    # The app opens links and files with xdg-open, and looks for hc on PATH,
-    # in the user's login shell and in the usual install places. This
-    # herdr-core comes last, so a core the user installed wins.
+    # The app opens links and files with xdg-open. The bundled win98 mod does
+    # the same from JavaScript, which is embedded by build.rs.
     substituteInPlace src/links.rs \
       --replace-fail '"xdg-open"' '"${lib.getExe' xdg-utils "xdg-open"}"'
     substituteInPlace vendor/gpui-pre-linux/src/linux/platform.rs \
       --replace-fail 'new_std_command("xdg-open")' 'new_std_command("${lib.getExe' xdg-utils "xdg-open"}")'
+    substituteInPlace defaults/mods/win98/kit.js \
+      --replace-fail 'exec(mac ? "open" : "xdg-open", [act.url])' \
+        'exec(mac ? "open" : "${lib.getExe' xdg-utils "xdg-open"}", [act.url])'
+
+    # The app looks for hc in settings, PATH, the login shell's PATH and the
+    # usual install places. This herdr-core comes after all of them, so a core
+    # the user installed wins.
     substituteInPlace src/core_bin.rs \
-      --replace-fail 'PathBuf::from("/run/current-system/sw/bin"),' \
-        'PathBuf::from("/run/current-system/sw/bin"), PathBuf::from("${herdr-core}/bin"),'
+      --replace-fail 'pick(quick).or_else(|| pick(dirs_on(&login_shell_path()?).flat_map(|d| names(&d)).collect()))' \
+        'pick(quick).or_else(|| pick(dirs_on(&login_shell_path()?).flat_map(|d| names(&d)).collect())).or_else(|| pick(names(Path::new("${herdr-core}/bin")).to_vec()))'
 
     # Settings tells a Nix build to update with git; drop this once
     # https://github.com/herdrdev/herdr-app/issues/136 is fixed.

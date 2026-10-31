@@ -63,9 +63,9 @@ from the desktop entry or the app itself.
   so a wrapper's `LD_LIBRARY_PATH` would leak into every shell.
 - **`xdg-open` is absolute.** The app opens links and files with it, and a Nix
   desktop session may not have `xdg-open` on the app's `PATH`.
-- **The app finds this flake's core** as a last resort, after `core` in
-  settings, `PATH`, the login shell and the usual install directories — a core
-  you installed yourself still wins.
+- **The app finds this flake's core** only after `core` in settings, `PATH`,
+  the usual install directories and the login shell have failed — a core you
+  installed yourself still wins.
 - **`hc machine add` downloads the static release** instead of copying its own
   binary to a machine with the same OS and CPU. A Nix-built `hc` needs its
   `/nix/store` paths, which the other machine does not have.
@@ -74,9 +74,10 @@ from the desktop entry or the app itself.
 - **The settings screen says "Managed by nix"** instead of offering a git
   update (upstream: [herdr-app#136](https://github.com/herdrdev/herdr-app/issues/136)).
 
-Upstream's test suites run as part of the build (`nix flake check`); a few
-tests are skipped where they need the network, a `/var/tmp` the sandbox lacks,
-or a debug build.
+Upstream's test suites run as part of the build (`nix flake check`); four tests
+are skipped: two install a core on another machine, which this packaging now
+always downloads (no network in the sandbox), one reads element bounds only
+debug builds record, and one races GPUI's test scheduler.
 
 ## Platforms
 
