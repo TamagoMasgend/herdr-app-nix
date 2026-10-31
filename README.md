@@ -22,7 +22,9 @@ Try it without installing anything:
 nix run github:TamagoMasgend/herdr-app-nix
 ```
 
-As a flake input:
+Add the input and overlay to your existing NixOS flake. This example imports
+`./configuration.nix`; use your host's path and platform, and keep its existing
+`system.stateVersion`:
 
 ```nix
 {
@@ -34,10 +36,12 @@ As a flake input:
   outputs = { nixpkgs, herdr-app-nix, ... }: {
     nixosConfigurations.host = nixpkgs.lib.nixosSystem {
       modules = [
-        {
+        ./configuration.nix
+        ({ pkgs, ... }: {
+          nixpkgs.hostPlatform = "x86_64-linux";
           nixpkgs.overlays = [ herdr-app-nix.overlays.default ];
           environment.systemPackages = [ pkgs.herdr-app pkgs.herdr-core ];
-        }
+        })
       ];
     };
   };
@@ -81,9 +85,9 @@ debug builds record, and one races GPUI's test scheduler.
 
 ## Platforms
 
-Linux only (`x86_64-linux`, `aarch64-linux`), which is the platform set this
-flake was written and tested for. Upstream also builds macOS and Windows; the
-derivations would need their own fixes there.
+Linux only. `x86_64-linux` has been built and runtime-smoke-tested;
+`aarch64-linux` evaluates, but has not been built or run here. Upstream also
+builds macOS and Windows; these derivations are not adapted to those platforms.
 
 The app draws with Vulkan (Mesa's software driver is enough) and needs a
 desktop session.
