@@ -16,7 +16,7 @@ The app needs a core of at least 0.1.11.
 
 ## Usage
 
-Try it without installing anything:
+With Nix and flakes enabled, run without adding the app to a profile:
 
 ```sh
 nix run github:TamagoMasgend/herdr-app-nix
@@ -57,8 +57,8 @@ environment.systemPackages = [
 ];
 ```
 
-There is no NixOS or Home Manager module yet: both are user programs, started
-from the desktop entry or the app itself.
+There is no NixOS or Home Manager module. Launch `herdr-app` from the desktop
+entry or a terminal; the app starts the core when needed.
 
 ## What the packaging changes
 
@@ -94,9 +94,11 @@ desktop session.
 
 ## Notes
 
-- Not an official package: upstream has no release here. The same two packages
-  are proposed to nixpkgs as [NixOS/nixpkgs#581031](https://github.com/NixOS/nixpkgs/pull/581031);
-  this repo is independent of that PR and can be deleted once it lands.
+- This is unofficial Nix packaging, independent of
+  [NixOS/nixpkgs#581031](https://github.com/NixOS/nixpkgs/pull/581031). That PR
+  proposes `herdr-core` and `herdr-desktop`; this flake calls the desktop package
+  `herdr-app`. Existing consumers would need to migrate their flake inputs
+  before this repository could be retired.
 - Report packaging problems here, app and core bugs upstream:
   [herdr-app](https://github.com/herdrdev/herdr-app),
   [herdr-core](https://github.com/herdrdev/herdr-core).
