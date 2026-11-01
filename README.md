@@ -9,8 +9,8 @@ Nix build needs.
 
 | Package | Version | Binary |
 | --- | --- | --- |
-| `herdr-app` (default) | 0.1.9 | `herdr-app` |
-| `herdr-core` | 0.1.14 | `hc`, `herdr-core` |
+| `herdr-app` (default) | 0.1.11 | `herdr-app` |
+| `herdr-core` | 0.1.16 | `hc`, `herdr-core` |
 
 The app needs a core of at least 0.1.11.
 

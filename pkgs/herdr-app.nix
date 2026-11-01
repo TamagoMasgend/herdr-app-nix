@@ -6,6 +6,7 @@
   zig_0_16,
   pkg-config,
   clang,
+  curl,
   makeDesktopItem,
   copyDesktopItems,
   fontconfig,
@@ -33,7 +34,7 @@ let
 in
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "herdr-app";
-  version = "0.1.9";
+  version = "0.1.11";
 
   __structuredAttrs = true;
 
@@ -42,10 +43,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
     repo = "herdr-app";
     tag = "v${finalAttrs.version}";
     fetchSubmodules = true;
-    hash = "sha256-XXAcJWwaaec/E941NkGAiCWgeHyT5jpYKcfz+8mbkvI=";
+    hash = "sha256-vuY2a3iGVJ8+oOXnQbWY5/hYNUdCov5yDuttCq9swr4=";
   };
 
-  cargoHash = "sha256-NOLcdtc9zLojjkEwGbjiTGTxDhX9w42hWtNrrE3kID4=";
+  cargoHash = "sha256-DX4+ELg1vtprKv8N6R8rW42wty+hKMo96/MxiiUmqu8=";
 
   # The app draws its terminals with libghostty-vt, built through Cargo. Its
   # Zig packages are fetched here instead of during the build.
@@ -114,8 +115,11 @@ rustPlatform.buildRustPackage (finalAttrs: {
     ln -s ${finalAttrs.zigDeps} "$ZIG_GLOBAL_CACHE_DIR/p"
   '';
 
-  # Some tests run programs in $HOME.
-  nativeCheckInputs = [ writableTmpDirAsHomeHook ];
+  # Some tests run programs in $HOME; the update-check test fetches a local manifest.
+  nativeCheckInputs = [
+    curl
+    writableTmpDirAsHomeHook
+  ];
 
   checkFlags = [
     # Reads element bounds that only debug builds record.

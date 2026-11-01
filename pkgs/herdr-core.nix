@@ -18,7 +18,7 @@
 }:
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "herdr-core";
-  version = "0.1.14";
+  version = "0.1.16";
 
   __structuredAttrs = true;
 
@@ -27,10 +27,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
     repo = "herdr-core";
     tag = "v${finalAttrs.version}";
     fetchSubmodules = true;
-    hash = "sha256-s8SMLWbxEcQCRxtHs68xo6P3zRNn+IWBteM+akj2zpM=";
+    hash = "sha256-TIOXZswCum0g3qcDK+RDZb9Y7lUu+bx+Oyja4EtKKh4=";
   };
 
-  cargoHash = "sha256-A3sxal2nVELUVBJm7g6MsYsT1MhyKo4rDQK0uWmrwQ0=";
+  cargoHash = "sha256-hMkych62liZ+Oe5huM2drN5/6ckpF8AEHH2dyskcivo=";
 
   # The terminal emulator core is libghostty-vt, driven from Cargo through
   # Zig. Its build fetches packages with `zig build --fetch=all`; this is
@@ -96,10 +96,11 @@ rustPlatform.buildRustPackage (finalAttrs: {
         --replace-fail ':/usr/bin:/bin ' ':${remoteBin} ' \
         --replace-fail 'PATH=/usr/bin:/bin ' 'PATH=${remoteBin} '
 
-      # The installer test runs install.sh with PATH=/usr/bin:/bin to hide any
-      # installed hc; the sandbox lacks both directories.
+      # The installer tests hide installed hc with their own PATH. Keep the
+      # curl stub first where used, then supply tools the sandbox lacks.
       substituteInPlace crates/herdr-core/tests/distribution.rs \
-        --replace-fail '.env("PATH", "/usr/bin:/bin")' '.env("PATH", "${installerBin}")'
+        --replace-fail '.env("PATH", "/usr/bin:/bin")' '.env("PATH", "${installerBin}")' \
+        --replace-fail 'format!("{}:/usr/bin:/bin", stub.display())' 'format!("{}:${installerBin}", stub.display())'
 
       # tests/distribution.rs runs this python3 script.
       patchShebangs scripts/manifest
